@@ -4,12 +4,12 @@
 winexe
 C#
 .cs
-D:\claude\AdminRecovery\obj\Release\net8.0-windows\win-x64\
+D:\claude\AdminRecovery\RecoveryTool\obj\Release\net8.0-windows\win-x64\
 RecoveryTool
 none
 false
 TRACE;RELEASE;NET;NET8_0;NETCOREAPP
-D:\claude\AdminRecovery\App.xaml
+D:\claude\AdminRecovery\RecoveryTool\App.xaml
 21057218745
 
 9764224942

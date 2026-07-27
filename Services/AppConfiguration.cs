@@ -21,8 +21,6 @@ public sealed class AppConfiguration
             : new();
         config.RootPath = root;
         Directory.CreateDirectory(config.IsoFolderPath);
-        Directory.CreateDirectory(Path.Combine(root, "Scripts"));
-        Directory.CreateDirectory(Path.Combine(root, "Temp"));
         return config;
     }
 }

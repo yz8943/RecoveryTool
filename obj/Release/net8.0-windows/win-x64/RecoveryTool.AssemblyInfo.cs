@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RecoveryTool")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d620741e9659d75342b3d056f9790f2e4d48baed")]
 [assembly: System.Reflection.AssemblyProductAttribute("RecoveryTool")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RecoveryTool")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

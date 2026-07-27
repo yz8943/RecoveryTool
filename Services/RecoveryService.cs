@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Security.Principal;
+using System.Text;
 using Serilog;
 
 namespace RecoveryTool.Services;
@@ -37,11 +38,15 @@ public sealed class RecoveryService
             throw new InvalidDataException("请选择有效的 Windows ISO 文件。");
 
         _log.Information("开始 Windows ISO 安装：{IsoPath}", isoPath);
-        // Mount-DiskImage is used so setup.exe runs from the mounted ISO without extracting it.
-        var scriptPath = Path.Combine(AppContext.BaseDirectory, "Scripts", "install.ps1");
-        if (!File.Exists(scriptPath)) throw new FileNotFoundException("安装脚本不存在。", scriptPath);
-        var escaped = isoPath.Replace("\"", "\\\"");
-        StartProcess("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -File \"{scriptPath}\" -IsoPath \"{escaped}\"");
+        // The PowerShell command is embedded so the published single-file EXE has no script dependency.
+        var safePath = isoPath.Replace("'", "''");
+        var script = "$isoPath = '" + safePath + "'\r\n" +
+            "Mount-DiskImage -ImagePath $isoPath -StorageType ISO -PassThru | Get-Volume | ForEach-Object {\r\n" +
+            "  $setup = Join-Path ($_.DriveLetter + ':') 'setup.exe'\r\n" +
+            "  Start-Process $setup -Verb RunAs\r\n" +
+            "}\r\n";
+        var encodedCommand = Convert.ToBase64String(Encoding.Unicode.GetBytes(script));
+        StartProcess("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -EncodedCommand {encodedCommand}");
         _log.Information("Windows 安装程序已启动");
         return Task.CompletedTask;
     }

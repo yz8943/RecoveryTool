@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\claude\\AdminRecovery\\RecoveryTool.csproj": {}
+    "D:\\claude\\AdminRecovery\\RecoveryTool\\RecoveryTool.csproj": {}
   },
   "projects": {
-    "D:\\claude\\AdminRecovery\\RecoveryTool.csproj": {
+    "D:\\claude\\AdminRecovery\\RecoveryTool\\RecoveryTool.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\claude\\AdminRecovery\\RecoveryTool.csproj",
+        "projectUniqueName": "D:\\claude\\AdminRecovery\\RecoveryTool\\RecoveryTool.csproj",
         "projectName": "RecoveryTool",
-        "projectPath": "D:\\claude\\AdminRecovery\\RecoveryTool.csproj",
+        "projectPath": "D:\\claude\\AdminRecovery\\RecoveryTool\\RecoveryTool.csproj",
         "packagesPath": "C:\\Users\\yang\\.nuget\\packages\\",
-        "outputPath": "D:\\claude\\AdminRecovery\\obj\\",
+        "outputPath": "D:\\claude\\AdminRecovery\\RecoveryTool\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\yang\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -43,6 +43,12 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.29, )",
+              "autoReferenced": true
+            },
             "Serilog": {
               "target": "Package",
               "version": "[4.2.0, )"

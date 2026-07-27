@@ -9,8 +9,11 @@
     <Platforms>x64</Platforms>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
-    <PublishSingleFile>false</PublishSingleFile>
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
     <AssemblyName>RecoveryTool</AssemblyName>
     <RootNamespace>RecoveryTool</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -22,8 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Config\config.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <None Update="Scripts\*.ps1" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Update="Config\config.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" />
+    <None Update="Scripts\*.ps1" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="Never" />
     <None Remove="Assets\windows11-iso-download.png" />
     <Resource Include="Assets\windows11-iso-download.png" />
   </ItemGroup>
