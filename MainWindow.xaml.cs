@@ -17,15 +17,25 @@ public partial class MainWindow : Window
 
     private async void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        var result = MessageBox.Show(
+        var confirm = MessageBox.Show(
             "此操作将删除当前电脑上的用户数据和已安装软件，并启动 Windows 官方恢复流程。\n\n确定继续吗？",
             "确认重置系统", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-        if (result != MessageBoxResult.Yes) return;
+        if (confirm != MessageBoxResult.Yes) return;
 
         try
         {
-            await AppServices.Recovery.ResetAsync();
-            _viewModel.StatusMessage = "已启动 Windows 恢复流程";
+            var result = await AppServices.Recovery.ResetAsync();
+            if (result == ResetResult.DirectStarted)
+            {
+                _viewModel.StatusMessage = "已启动 Windows 恢复流程";
+            }
+            else
+            {
+                _viewModel.StatusMessage = "已打开系统恢复设置";
+                MessageBox.Show(
+                    "当前电脑未检测到 systemreset.exe 组件（常见于精简版/LTSC 系统或 WinRE 恢复环境未启用）。\n\n已为您自动打开 Windows『设置 - 恢复』页面，请在弹出的设置窗口中点击『重置此电脑』即可继续操作。",
+                    "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
         catch (Exception ex)
         {

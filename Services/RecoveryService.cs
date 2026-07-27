@@ -6,6 +6,12 @@ using Serilog;
 
 namespace RecoveryTool.Services;
 
+public enum ResetResult
+{
+    DirectStarted,
+    SettingsOpened
+}
+
 public sealed class RecoveryService
 {
     private readonly AppConfiguration _configuration;
@@ -17,22 +23,50 @@ public sealed class RecoveryService
         _log = log;
     }
 
-    public Task ResetAsync()
+    public Task<ResetResult> ResetAsync()
     {
         EnsureWindows();
         EnsureAdministrator();
-        _log.Information("开始 Windows Reset");
+        _log.Information("开始 Windows Reset 流程");
 
-        var system32 = Environment.GetFolderPath(Environment.SpecialFolder.System);
-        var systemResetPath = Path.Combine(system32, "systemreset.exe");
-        if (!File.Exists(systemResetPath))
+        var winDir = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+        var sysDir = Environment.GetFolderPath(Environment.SpecialFolder.System);
+        var candidatePaths = new[]
         {
-            systemResetPath = "systemreset.exe";
+            Path.Combine(sysDir, "systemreset.exe"),
+            Path.Combine(winDir, "System32", "systemreset.exe"),
+            Path.Combine(winDir, "SysWOW64", "systemreset.exe")
+        };
+
+        foreach (var path in candidatePaths)
+        {
+            if (File.Exists(path))
+            {
+                try
+                {
+                    StartProcess(path, "-factoryreset");
+                    _log.Information("已通过 {Path} 启动 Windows Reset", path);
+                    return Task.FromResult(ResetResult.DirectStarted);
+                }
+                catch (Exception ex)
+                {
+                    _log.Warning(ex, "尝试启动 {Path} 失败，尝试其他路径或降级方案", path);
+                }
+            }
         }
 
-        StartProcess(systemResetPath, "-factoryreset");
-        _log.Information("Windows Reset 已启动");
-        return Task.CompletedTask;
+        _log.Warning("未检测到有效的 systemreset.exe 或启动失败，准备调起系统恢复设置页面");
+        try
+        {
+            StartProcess("ms-settings:recovery", "");
+            _log.Information("已调起 Windows 设置 Recovery 页面");
+            return Task.FromResult(ResetResult.SettingsOpened);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "无法调起系统恢复设置页面");
+            throw new InvalidOperationException("未找到 systemreset.exe 组件，且无法调起系统恢复设置页面。请手动打开『设置 -> 系统 -> 恢复』进行重置。", ex);
+        }
     }
 
     public Task InstallFromIsoAsync(string isoPath)
