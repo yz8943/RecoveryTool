@@ -22,8 +22,15 @@ public sealed class RecoveryService
         EnsureWindows();
         EnsureAdministrator();
         _log.Information("开始 Windows Reset");
-        // systemreset.exe is the supported user-facing entry point for Reset this PC.
-        StartProcess("systemreset.exe", "-factoryreset");
+
+        var system32 = Environment.GetFolderPath(Environment.SpecialFolder.System);
+        var systemResetPath = Path.Combine(system32, "systemreset.exe");
+        if (!File.Exists(systemResetPath))
+        {
+            systemResetPath = "systemreset.exe";
+        }
+
+        StartProcess(systemResetPath, "-factoryreset");
         _log.Information("Windows Reset 已启动");
         return Task.CompletedTask;
     }
@@ -38,7 +45,14 @@ public sealed class RecoveryService
             throw new InvalidDataException("请选择有效的 Windows ISO 文件。");
 
         _log.Information("开始 Windows ISO 安装：{IsoPath}", isoPath);
-        // The PowerShell command is embedded so the published single-file EXE has no script dependency.
+
+        var system32 = Environment.GetFolderPath(Environment.SpecialFolder.System);
+        var powerShellPath = Path.Combine(system32, "WindowsPowerShell", "v1.0", "powershell.exe");
+        if (!File.Exists(powerShellPath))
+        {
+            powerShellPath = "powershell.exe";
+        }
+
         var safePath = isoPath.Replace("'", "''");
         var script = "$isoPath = '" + safePath + "'\r\n" +
             "Mount-DiskImage -ImagePath $isoPath -StorageType ISO -PassThru | Get-Volume | ForEach-Object {\r\n" +
@@ -46,7 +60,7 @@ public sealed class RecoveryService
             "  Start-Process $setup -Verb RunAs\r\n" +
             "}\r\n";
         var encodedCommand = Convert.ToBase64String(Encoding.Unicode.GetBytes(script));
-        StartProcess("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -EncodedCommand {encodedCommand}");
+        StartProcess(powerShellPath, $"-NoProfile -ExecutionPolicy Bypass -EncodedCommand {encodedCommand}");
         _log.Information("Windows 安装程序已启动");
         return Task.CompletedTask;
     }
